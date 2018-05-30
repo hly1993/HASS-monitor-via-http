@@ -1,9 +1,7 @@
 #!/usr/bin/env python
 """
-Very simple HTTP server in python.
-
 Usage::
-    ./dummy-web-server.py [<port>]
+    ./hass-monitor-web-server.py [<port>]
 
 Send a GET request::
     curl http://localhost
@@ -41,31 +39,7 @@ class S(BaseHTTPRequestHandler):
         content_length = int(self.headers['Content-Length']) # <--- Gets the size of data
         post_data = self.rfile.read(content_length) # <--- Gets the data itself
         print post_data
-        if post_data[:8]=="command=":
-            ticksprev = time.time()
-            if post_data[8:]=="TV":
-                os.system("irsend SEND_ONCE TVSET KEY_TV")
-            elif post_data[8:]=="TV_SIG":
-                os.system("irsend SEND_ONCE TVSET KEY_SIG")
-            elif post_data[8:]=="TV_KEY_UP":
-                os.system("irsend SEND_ONCE TVSET KEY_UP")
-            elif post_data[8:]=="TV_KEY_DOWN":
-                os.system("irsend SEND_ONCE TVSET KEY_DOWN")
-            elif post_data[8:]=="TV_KEY_CF":
-                os.system("irsend SEND_ONCE TVSET KEY_CF")
-            elif post_data[8:]=="AC_KEY_OPEN":
-                os.system("irsend SEND_ONCE AC KEY_OPEN")
-            elif post_data[8:]=="AC_KEY_UPDN":
-                os.system("irsend SEND_ONCE AC KEY_UPDN")
-            elif post_data[8:]=="AC_KEY_PO":
-                os.system("irsend SEND_ONCE AC KEY_PO")
-            elif post_data[8:]=="AC_KEY_PN":
-                os.system("irsend SEND_ONCE AC KEY_PN")
-            elif post_data[8:]=="AC_KEY_CLOSE":
-                os.system("irsend SEND_ONCE AC KEY_CLOSE")
-            else:
-                print 'bad command'
-        elif post_data == "Survival Confirmation": 
+        if post_data == "Survival Confirmation": 
             ticksprev = time.time()
         print ticksprev
         self._set_headers()
@@ -79,41 +53,23 @@ def print_time( threadName, delay):
       if ticksnow - ticksprev > 180:
         print "Hass Service failed, restarting.....\n%s: %s" % ( threadName, time.ctime(time.time()) )
         ticksprev = time.time()
-        r = requests.get("https://sc.ftqq.com/SCU27229Tf67f8df6514dd6b63fb881e0516221795b0e0005e7d48.send?text=Hass Service failed, restarting.....%s" % time.ctime(time.time()))
-        ssh = pexpect.spawn('ssh pi@192.168.1.148')
+        r = requests.get("https://sc.ftqq.com/*********.send?text=Hass Service failed, restarting.....%s" % time.ctime(time.time()))
+        ssh = pexpect.spawn('ssh pi@192.168.1.*')
         try:
             i = ssh.expect(['password:', 'continue connecting (yes/no)?'], timeout=0.5)
             if i == 0 :
-                ssh.sendline('hanliya')
+                ssh.sendline('****')
             elif i == 1:
                 ssh.sendline('yes\n')
                 ssh.expect('password: ')
-                ssh.sendline('hanliya')
-            ssh.sendline("wall 'Death Confirmation'\n")
-            ssh.sendline("hassctl restart\n")
+                ssh.sendline('****')
+            ssh.sendline("wall 'Death Confirmation'\n")#向所有已登录用户通知
+            ssh.sendline("hassctl restart\n")#重启hass，需要安装hassctl工具
             ssh.expect(pexpect.EOF, timeout=1.5)
-            #r = ssh.read()
-            #print r
-            ssh.close()
-            #exit()
-        except pexpect.EOF:
-            print "EOF"
             ssh.close()
         except pexpect.TIMEOUT:
             print "TIMEOUT"
-            ssh.close()
-def run_while_true(server_class=HTTPServer,
-                   handler_class=S,port=80):
-    """
-    This assumes that keep_running() is a function of no arguments which
-    is tested initially and after each request.  If its return value
-    is true, the server continues.
-    """
-    server_address = ('', port)
-    httpd = server_class(server_address, handler_class)
-    while keep_running():
-        print 'Starting httpd...'
-        httpd.handle_request()        
+            ssh.close()   
 def run(server_class=HTTPServer, handler_class=S, port=80):
     server_address = ('', port)
     httpd = server_class(server_address, handler_class)
