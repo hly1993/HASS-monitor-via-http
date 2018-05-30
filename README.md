@@ -5,7 +5,9 @@ monitor the homeasssistant and restart if dead
 使用前请先安装pip
 
 sudo apt-get install python-pip
+
 pip install pexpect
+
 pip install requests
 
 消息通知服务使用server酱：
