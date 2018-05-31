@@ -24,7 +24,7 @@ sudo python ./hass-monitor-web-server.py 8080
 
 homeassitant填写自动化，定时执行：
 
-curl -d "Survival Confirmation" "serv.beardog.top:8080"
+curl -d "Survival Confirmation" "XXXX:8080"
 
 3分钟没有收到post请求则会重启hass
 
